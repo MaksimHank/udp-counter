@@ -27,3 +27,10 @@ func NewPool(numWorkers int) *Pool {
 		wg:         wg,
 	}
 }
+
+func (p *Pool) Run(n int) {
+	for n = range p.NumWorkers {
+		wg.Add(1)
+		go worker(n, p.tasks, p.ctx, &p.wg)
+	}
+}
