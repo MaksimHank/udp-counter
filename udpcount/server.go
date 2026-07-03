@@ -12,11 +12,13 @@ func StartServer(addr string) {
 	udpAddr, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
 		fmt.Printf("func StartServer. \nAddress error")
+		return
 	}
 
 	conn, err := net.ListenUDP("udp", udpAddr)
 	if err != nil {
 		fmt.Printf("func StartServer. \nStarting error server")
+		return
 	}
 	defer conn.Close()
 
