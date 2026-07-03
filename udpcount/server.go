@@ -3,6 +3,9 @@ package udpcount
 import (
 	"fmt"
 	"net"
+	"strconv"
+	"sync"
+	"time"
 )
 
 func StartServer(addr string) {
@@ -17,9 +20,20 @@ func StartServer(addr string) {
 	}
 	defer conn.Close()
 
-	fmt.Printf("func StartServer. Server has successfully started on addr %s", addr)
+	var counter int
+	mu := sync.Mutex{}
 
-	//TODO: реализовать счётчик
+	go func() {
+		ticker := time.NewTicker(1 * time.Second)
+		defer ticker.Stop()
+		for range ticker.C {
+			mu.Lock()
+			counter++
+			mu.Unlock()
+		}
+	}()
+
+	fmt.Printf("func StartServer. Server has successfully started on addr %s", addr)
 
 	buffer := make([]byte, 1024)
 
@@ -29,7 +43,11 @@ func StartServer(addr string) {
 			fmt.Printf("func StartServer. Reading error!")
 			continue
 		}
+
 		message := string(buffer[:n])
+		mu.Lock()
+		message = strconv.Itoa(counter)
+		mu.Unlock()
 
 		response := []byte(message)
 		_, err = conn.WriteToUDP(response, clientAddr)

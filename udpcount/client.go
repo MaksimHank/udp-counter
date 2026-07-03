@@ -1,1 +1,5 @@
 package udpcount
+
+func Client() {
+
+}
